@@ -154,7 +154,7 @@ spec:
         operator: "Exists"
       containers:
       - name: node-cache
-        image: registry.cn-shanghai.aliyuncs.com/loulan-public/tools:nodelocaldns-1
+        image: registry.k8s.io/dns/k8s-dns-node-cache:1.22.23
         imagePullPolicy: IfNotPresent  # 采用旧集群的
         resources:                # 采用旧集群的
           limits:

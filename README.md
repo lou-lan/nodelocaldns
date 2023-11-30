@@ -31,4 +31,8 @@
   [INFO] Added back nodelocaldns rule - {raw OUTPUT [-p tcp -d 10.96.0.10 --dport 8080 -j NOTRACK -m comment --comment NodeLocal DNS Cache: skip conntrack]}
   [INFO] Added back nodelocaldns rule - {raw OUTPUT [-p tcp -s 10.96.0.10 --sport 8080 -j NOTRACK -m comment --comment NodeLocal DNS Cache: skip conntrack]}
   ```
-8. 在该 node-local-dns pod 的节点的业务 pod 发起 dns 请求
+8. 在该 node-local-dns pod 的节点，找一个业务 pod 发起 dns 请求，检查外部请求与内部请求
+  ```bash
+  dig @10.96.0.10 -p 53 kubernetes.default.svc.cluster.local
+  dig @10.96.0.10 -p 53 www.baidu.com
+  ```

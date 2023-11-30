@@ -68,7 +68,7 @@ data:
         }
         log . {
            class all
-        }        
+        }
         prometheus :9253
         }
     ip6.arpa:53 {
@@ -82,7 +82,7 @@ data:
         }
         log . {
            class all
-        }        
+        }
         prometheus :9253
         }
     .:53 {
@@ -92,7 +92,7 @@ data:
         loop
         log . {
            class all
-        }        
+        }
         bind 10.96.0.10
         forward . 10.96.0.2
         prometheus :9253
@@ -103,12 +103,12 @@ kind: DaemonSet
 metadata:
   name: node-local-dns
   namespace: kube-system
-  annotations:            # 增加 annotations 都为旧集群的 yaml 定义                    
+  annotations:            # 增加 annotations 都为旧集群的 yaml 定义
     dce.daocloud.io/metrics-enabled: "1"
     dce.daocloud.io/metrics-port: "9253"
     dcei.daocloud.io/filter: '{"nano": {"regex": ["^go_goroutines", "^coredns_cache_size",
       "^coredns_panic_count_total", "^coredns_(forward_request|dns_request)_count_total",
-      "^coredns_(cache_misses|cache_hits)_total"], "type": "include"}}'  
+      "^coredns_(cache_misses|cache_hits)_total"], "type": "include"}}'
   labels:
     k8s-app: node-local-dns
     kubernetes.io/cluster-service: "true"
@@ -130,7 +130,7 @@ spec:
         scheduler.alpha.kubernetes.io/critical-pod: ""       # 本行及下面这行，采用旧集群的版本
         scheduler.alpha.kubernetes.io/tolerations: |
           [{"key": "dedicated", "value": "master", "effect": "NoSchedule" },
-           {"key":"CriticalAddonsOnly", "operator":"Exists"}]        
+           {"key":"CriticalAddonsOnly", "operator":"Exists"}]
     spec:
       priorityClassName: system-node-critical
       serviceAccountName: node-local-dns
@@ -144,7 +144,7 @@ spec:
               - key: beta.kubernetes.io/os
                 operator: In
                 values:
-                - linux      
+                - linux
       tolerations:
       - key: "CriticalAddonsOnly"
         operator: "Exists"
@@ -189,8 +189,9 @@ spec:
           readOnly: false
         - name: config-volume
           mountPath: /etc/coredns
-        - name: kube-dns-config
-          mountPath: /etc/kube-dns
+        # 因为旧集群没有这个 configmap
+        # - name: kube-dns-config
+        #   mountPath: /etc/kube-dns
       volumes:
       - name: xtables-lock
         hostPath:

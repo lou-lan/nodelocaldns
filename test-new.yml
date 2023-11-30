@@ -98,7 +98,7 @@ data:
         prometheus :9253
         }
 ---
-apiVersion: apps/v1
+apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
   name: node-local-dns

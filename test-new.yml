@@ -155,6 +155,7 @@ spec:
       containers:
       - name: node-cache
         image: registry.cn-shanghai.aliyuncs.com/loulan-public/tools:nodelocaldns-1
+        imagePullPolicy: IfNotPresent  # 采用旧集群的
         resources:                # 采用旧集群的
           limits:
             cpu: "1"

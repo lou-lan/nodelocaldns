@@ -195,10 +195,11 @@ spec:
         hostPath:
           path: /run/xtables.lock
           type: FileOrCreate
-      - name: kube-dns-config
-        configMap:
-          name: kube-dns
-          optional: true
+      # 因为旧集群没有这个 configmap
+      # - name: kube-dns-config
+      #   configMap:
+      #     name: kube-dns
+      #     optional: true
       - name: config-volume
         configMap:
           name: node-local-dns

@@ -1,0 +1,96 @@
+[root@10-29-2-46 ~]# kubectl logs node-local-dns-77hww -n kube-system -f --tail 100
+2023/11/30 05:17:54 [INFO] Starting node-cache image: 1.22.23
+2023/11/30 05:17:54 [INFO] Using Corefile /etc/Corefile
+2023/11/30 05:17:54 [INFO] Using Pidfile
+2023/11/30 05:17:54 [INFO] Updated Corefile with 0 custom stubdomains and upstream servers /etc/resolv.conf
+2023/11/30 05:17:54 [INFO] Using config file:
+cluster.local:53 {
+    errors
+    cache {
+            success 9984 30
+            denial 9984 5
+    }
+    reload
+    loop
+    bind 10.96.0.10
+    forward . 10.96.0.2 {
+            force_tcp
+    }
+    log . {
+       class all
+    }
+    prometheus :9253
+    health 10.96.0.10:8080
+    }
+in-addr.arpa:53 {
+    errors
+    cache 30
+    reload
+    loop
+    bind 10.96.0.10
+    forward . 10.96.0.2 {
+            force_tcp
+    }
+    log . {
+       class all
+    }
+    prometheus :9253
+    }
+ip6.arpa:53 {
+    errors
+    cache 30
+    reload
+    loop
+    bind 10.96.0.10
+    forward . 10.96.0.2 {
+            force_tcp
+    }
+    log . {
+       class all
+    }
+    prometheus :9253
+    }
+.:53 {
+    errors
+    cache 30
+    reload
+    loop
+    log . {
+       class all
+    }
+    bind 10.96.0.10
+    forward . 10.96.0.2
+    prometheus :9253
+    }
+2023/11/30 05:17:54 [INFO] Skipping kube-dns configmap sync as no directory was specified
+2023/11/30 05:17:54 [INFO] Added interface - nodelocaldns
+.:53 on 10.96.0.10
+cluster.local.:53 on 10.96.0.10
+in-addr.arpa.:53 on 10.96.0.10
+ip6.arpa.:53 on 10.96.0.10
+[INFO] plugin/reload: Running configuration SHA512 = 2f58635476a345329fefa90187d7f1bb317dad5f3d662e3725a47e950572c177eaf11e6796fb76b83beb14d5a89ec7df18c6c93e99744a5d1b0b8fc1572dbadf
+CoreDNS-1.10.0
+linux/amd64, go1.20.5,
+
+
+
+[INFO] Added back nodelocaldns rule - {raw PREROUTING [-p tcp -d 10.96.0.10 --dport 53 -j NOTRACK -m comment --comment NodeLocal DNS Cache: skip conntrack]}
+[INFO] Added back nodelocaldns rule - {raw PREROUTING [-p udp -d 10.96.0.10 --dport 53 -j NOTRACK -m comment --comment NodeLocal DNS Cache: skip conntrack]}
+[INFO] Added back nodelocaldns rule - {filter INPUT [-p tcp -d 10.96.0.10 --dport 53 -j ACCEPT -m comment --comment NodeLocal DNS Cache: allow DNS traffic]}
+[INFO] Added back nodelocaldns rule - {filter INPUT [-p udp -d 10.96.0.10 --dport 53 -j ACCEPT -m comment --comment NodeLocal DNS Cache: allow DNS traffic]}
+[INFO] Added back nodelocaldns rule - {raw OUTPUT [-p tcp -s 10.96.0.10 --sport 53 -j NOTRACK -m comment --comment NodeLocal DNS Cache: skip conntrack]}
+[INFO] Added back nodelocaldns rule - {raw OUTPUT [-p udp -s 10.96.0.10 --sport 53 -j NOTRACK -m comment --comment NodeLocal DNS Cache: skip conntrack]}
+[INFO] Added back nodelocaldns rule - {filter OUTPUT [-p tcp -s 10.96.0.10 --sport 53 -j ACCEPT -m comment --comment NodeLocal DNS Cache: allow DNS traffic]}
+[INFO] Added back nodelocaldns rule - {filter OUTPUT [-p udp -s 10.96.0.10 --sport 53 -j ACCEPT -m comment --comment NodeLocal DNS Cache: allow DNS traffic]}
+[INFO] Added back nodelocaldns rule - {raw OUTPUT [-p tcp -d 10.96.0.10 --dport 53 -j NOTRACK -m comment --comment NodeLocal DNS Cache: skip conntrack]}
+[INFO] Added back nodelocaldns rule - {raw OUTPUT [-p udp -d 10.96.0.10 --dport 53 -j NOTRACK -m comment --comment NodeLocal DNS Cache: skip conntrack]}
+[INFO] Added back nodelocaldns rule - {raw OUTPUT [-p tcp -d 10.96.0.10 --dport 8080 -j NOTRACK -m comment --comment NodeLocal DNS Cache: skip conntrack]}
+[INFO] Added back nodelocaldns rule - {raw OUTPUT [-p tcp -s 10.96.0.10 --sport 8080 -j NOTRACK -m comment --comment NodeLocal DNS Cache: skip conntrack]}
+[INFO] 10.18.227.204:36344 - 5565 "A IN www.baidu.com. udp 42 false 4096" - - 0 6.001352468s
+[ERROR] plugin/errors: 2 www.baidu.com. A: read udp 10.29.2.51:52667->10.96.0.2:53: i/o timeout
+[INFO] 10.18.227.204:36344 - 5565 "A IN www.baidu.com. udp 42 false 4096" - - 0 4.002448305s
+[ERROR] plugin/errors: 2 www.baidu.com. A: read udp 10.29.2.51:40162->10.96.0.2:53: i/o timeout
+[INFO] 10.18.227.204:40364 - 47081 "A IN www.qq.com. udp 39 false 4096" SERVFAIL qr,rd 28 2.00167422s
+[INFO] 10.18.227.204:34151 - 7563 "A IN kubernetes.default.svc.cluster.local. udp 65 false 4096" NOERROR qr,aa,rd 106 0.001674539s
+[INFO] 10.18.227.204:44872 - 26459 "A IN kubernetes.default.svc.cluster.local. udp 65 false 4096" NOERROR qr,aa,rd 106 0.000113085s
+[INFO] 10.18.227.204:60466 - 21217 "A IN kubernetes.default.svc.cluster.local. udp 65 false 4096" NOERROR qr,aa,rd 106 0.000100493s

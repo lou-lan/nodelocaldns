@@ -98,7 +98,7 @@ data:
         prometheus :9253
         }
 ---
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1beta1                    # 采用旧集群的版本
 kind: DaemonSet
 metadata:
   name: node-local-dns
@@ -136,7 +136,7 @@ spec:
       containers:
       - name: node-cache
         image: registry.cn-shanghai.aliyuncs.com/loulan-public/tools:nodelocaldns-1
-        resources:
+        resources:                # 采用旧集群的
           limits:
             cpu: "1"
             memory: 250M

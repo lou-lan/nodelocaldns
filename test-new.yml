@@ -136,6 +136,15 @@ spec:
       serviceAccountName: node-local-dns
       hostNetwork: true
       dnsPolicy: Default  # Don't use cluster DNS.
+      affinity:           # 采用就集群的定义
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: beta.kubernetes.io/os
+                operator: In
+                values:
+                - linux      
       tolerations:
       - key: "CriticalAddonsOnly"
         operator: "Exists"

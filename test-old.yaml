@@ -1,0 +1,182 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  annotations:
+    dce.daocloud.io/metrics-enabled: "1"
+    dce.daocloud.io/metrics-port: "9253"
+    dcei.daocloud.io/filter: '{"nano": {"regex": ["^go_goroutines", "^coredns_cache_size",
+      "^coredns_panic_count_total", "^coredns_(forward_request|dns_request)_count_total",
+      "^coredns_(cache_misses|cache_hits)_total"], "type": "include"}}'
+  creationTimestamp: 2023-11-21T03:06:48Z
+  generation: 7
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile
+    k8s-app: node-local-dns
+    kubernetes.io/cluster-service: "true"
+  name: node-local-dns
+  namespace: kube-system
+  resourceVersion: "86842704"
+  selfLink: /apis/extensions/v1beta1/namespaces/kube-system/daemonsets/node-local-dns
+  uid: 028e124d-881b-11ee-8ff8-0242ac120004
+spec:
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: node-local-dns
+  template:
+    metadata:
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ""
+        scheduler.alpha.kubernetes.io/tolerations: |
+          [{"key": "dedicated", "value": "master", "effect": "NoSchedule" },
+           {"key":"CriticalAddonsOnly", "operator":"Exists"}]
+      creationTimestamp: null
+      labels:
+        k8s-app: node-local-dns
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: beta.kubernetes.io/os
+                operator: In
+                values:
+                - linux
+      containers:
+      - args:
+        - -localip
+        - 10.96.0.10
+        - -setupiptables=false
+        - -conf
+        - /etc/coredns/Corefile
+        env:
+        - name: KUBE_DNS_UPSTREAM_SERVICE_HOST
+          value: 10.96.0.2
+        image: 10.29.2.46/kube-system/k8s-dns-node-cache:1.22.28
+        imagePullPolicy: IfNotPresent
+        lifecycle:
+          postStart:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - iptables -t raw -D PREROUTING -d 10.96.0.10 -p udp -m udp --dport
+                53 -j NOTRACK;iptables -t raw -D PREROUTING -d 10.96.0.10 -p tcp -m
+                tcp --dport 53 -j NOTRACK;iptables -t nat -D INPUT -s 10.96.0.10 -p
+                udp -m udp --dport 53 -j ACCEPT;iptables -t nat -D INPUT -s 10.96.0.10
+                -p tcp -m tcp --dport 53 -j ACCEPT;iptables -t raw -D OUTPUT -s 10.96.0.10
+                -p udp -m udp --sport 53 -j NOTRACK;iptables -t raw -D OUTPUT -s 10.96.0.10
+                -p tcp -m tcp --sport 53 -j NOTRACK;iptables -t raw -D OUTPUT -s 10.96.0.10
+                -p udp -m udp --sport 53 -j ACCEPT;iptables -t raw -D OUTPUT -s 10.96.0.10
+                -p tcp -m tcp --sport 53 -j ACCEPT;iptables -t raw -D OUTPUT -s 10.96.0.10
+                -p udp -m udp --dport 53 -j NOTRACK;iptables -t raw -D OUTPUT -s 10.96.0.10
+                -p tcp -m tcp --dport 53 -j NOTRACK; iptables -t nat -D OUTPUT -d
+                10.96.0.10/32 -o lo -j RETURN; sleep 30; iptables -t raw -A PREROUTING
+                -d 10.96.0.10 -p udp -m udp --dport 53 -j NOTRACK;iptables -t raw
+                -A PREROUTING -d 10.96.0.10 -p tcp -m tcp --dport 53 -j NOTRACK;iptables
+                -t nat -A INPUT -s 10.96.0.10 -p udp -m udp --dport 53 -j ACCEPT;iptables
+                -t nat -A INPUT -s 10.96.0.10 -p tcp -m tcp --dport 53 -j ACCEPT;iptables
+                -t raw -A OUTPUT -s 10.96.0.10 -p udp -m udp --sport 53 -j NOTRACK;iptables
+                -t raw -A OUTPUT -s 10.96.0.10 -p tcp -m tcp --sport 53 -j NOTRACK;iptables
+                -t raw -A OUTPUT -s 10.96.0.10 -p udp -m udp --sport 53 -j ACCEPT;iptables
+                -t raw -A OUTPUT -s 10.96.0.10 -p tcp -m tcp --sport 53 -j ACCEPT;iptables
+                -t raw -A OUTPUT -s 10.96.0.10 -p udp -m udp --dport 53 -j NOTRACK;iptables
+                -t raw -A OUTPUT -s 10.96.0.10 -p tcp -m tcp --dport 53 -j NOTRACK;
+                iptables -t nat -I OUTPUT 1 -d 10.96.0.10 -o lo -j RETURN; exit 0;
+          preStop:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - 'iptables -t raw -D PREROUTING -d 10.96.0.10 -p udp -m udp --dport
+                53 -j NOTRACK;iptables -t raw -D PREROUTING -d 10.96.0.10 -p tcp -m
+                tcp --dport 53 -j NOTRACK;iptables -t nat -D INPUT -s 10.96.0.10 -p
+                udp -m udp --dport 53 -j ACCEPT;iptables -t nat -D INPUT -s 10.96.0.10
+                -p tcp -m tcp --dport 53 -j ACCEPT;iptables -t raw -D OUTPUT -s 10.96.0.10
+                -p udp -m udp --sport 53 -j NOTRACK;iptables -t raw -D OUTPUT -s 10.96.0.10
+                -p tcp -m tcp --sport 53 -j NOTRACK;iptables -t raw -D OUTPUT -s 10.96.0.10
+                -p udp -m udp --sport 53 -j ACCEPT;iptables -t raw -D OUTPUT -s 10.96.0.10
+                -p tcp -m tcp --sport 53 -j ACCEPT;iptables -t raw -D OUTPUT -s 10.96.0.10
+                -p udp -m udp --dport 53 -j NOTRACK;iptables -t raw -D OUTPUT -s 10.96.0.10
+                -p tcp -m tcp --dport 53 -j NOTRACK; iptables -t nat -D OUTPUT -d
+                10.96.0.10/32 -o lo -j RETURN; sleep 30 '
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            host: 10.96.0.10
+            path: /health
+            port: 9254
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: node-cache
+        ports:
+        - containerPort: 53
+          hostPort: 53
+          name: dns
+          protocol: UDP
+        - containerPort: 53
+          hostPort: 53
+          name: dns-tcp
+          protocol: TCP
+        - containerPort: 9253
+          hostPort: 9253
+          name: metrics
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "1"
+            memory: 250M
+          requests:
+            cpu: 200m
+            memory: 250M
+        securityContext:
+          privileged: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/coredns
+          name: config-volume
+        - mountPath: /run/xtables.lock
+          name: xtables-lock
+      dnsPolicy: Default
+      hostNetwork: true
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: node-local-dns
+      serviceAccountName: node-local-dns
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+      - key: CriticalAddonsOnly
+        operator: Exists
+      volumes:
+      - hostPath:
+          path: /run/xtables.lock
+          type: FileOrCreate
+        name: xtables-lock
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: Corefile
+            path: Corefile
+          name: node-local-dns
+        name: config-volume
+  templateGeneration: 7
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+status:
+  currentNumberScheduled: 7
+  desiredNumberScheduled: 7
+  numberAvailable: 7
+  numberMisscheduled: 0
+  numberReady: 7
+  observedGeneration: 7
+  updatedNumberScheduled: 7
